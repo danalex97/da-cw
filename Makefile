@@ -1,7 +1,8 @@
-PROJECT = cw
+PROJECT = da-cw
 NETWORK = $(PROJECT)_network
+PEERS = 5
 
-COMPOSE = docker-compose -p $(PROJECT)
+COMPOSE = MAIN=$(MAIN) PEERS=$(PEERS) docker-compose -p $(PROJECT)
 
 compile:
 	mix compile
