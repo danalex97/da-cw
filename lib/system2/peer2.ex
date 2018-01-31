@@ -7,6 +7,7 @@ defmodule Peer2 do
     pl  = spawn(PL, :start, [])
     app = spawn(App, :start, [])
 
+    send pl, {:peer, self()}
     send pl, {:app, app}
     send app, {:pl, pl}
 

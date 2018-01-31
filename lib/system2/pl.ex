@@ -1,31 +1,39 @@
 defmodule PL do
 
-  def run(app, pls) do
+  def run(peer, app, peer_map) do
     receive do
       {:pl_send, dest, msg} ->
-        send dest, {:pl_deliver, app, msg}
+        dest_pl = Map.get(peer_map, dest)
+        send dest_pl, {:pl_deliver, peer, msg}
 
       {:pl_deliver, from, msg} ->
         send app, {:pl_deliver, from, msg}
     end
 
-    run(app, pls)
+    run(peer, app, peer_map)
   end
 
   def start do
+    # peer = the process
+    peer = receive do
+      {:peer, peer} ->
+        peer
+    end
+
     app = receive do
       {:app, app} ->
         app
     end
 
-    pls = receive do
-      {:bind, pls} ->
-        pls
+    peer_map = receive do
+      {:bind, peer_map} ->
+        peer_map
     end
 
+    IO.puts ["pl.peer:", inspect peer]
     IO.puts ["pl.app:", inspect app]
-    IO.puts ["pl.pls:", inspect pls]
+    IO.puts ["pl.peer_map:", inspect peer_map]
 
-    run(app, pls)
+    run(peer, app, peer_map)
   end
 end

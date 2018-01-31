@@ -36,7 +36,7 @@ defmodule System2 do
       send peer, {:who_is_pl, self()}
     end)
 
-    # make app => pl map
+    # peer => pl map
     peer_map = Enum.reduce(0..(@n-1), %{}, fn(_idx, mp) ->
       {peer, pl} = receive do
         {:pl_is, peer, pl} ->
@@ -50,18 +50,18 @@ defmodule System2 do
     pls = Enum.to_list(for peer <- peers, do:
       Map.get(peer_map, peer))
     Enum.map(pls, fn (pl) ->
-      send pl, {:bind, pls}
+      send pl, {:bind, peer_map}
     end)
 
-    # register pls to app
-    Enum.map(pls, fn (pl) ->
-      send pl, {:pl_deliver, self(), {:peer_map, peer_map}}
-    end)
-
-    #broadcast
-    Enum.map(pls, fn (pl) ->
-      send pl, {:pl_deliver, self(), {:broadcast, @max_messages, @timeout}}
-    end)
+    # # register pls to app
+    # Enum.map(pls, fn (pl) ->
+    #   send pl, {:pl_deliver, self(), {:peer_map, peer_map}}
+    # end)
+    #
+    # #broadcast
+    # Enum.map(pls, fn (pl) ->
+    #   send pl, {:pl_deliver, self(), {:broadcast, @max_messages, @timeout}}
+    # end)
 
     loop()
   end
