@@ -1,17 +1,31 @@
 defmodule PL do
-  def loop do
-    loop()
-  end
 
-  def run(id, peers) do
-    IO.puts ["start ", inspect id]
-    loop()
+  def run(app, pls) do
+    receive do
+      {:pl_send, dest, msg} ->
+        send dest, {:pl_deliver, app, msg}
+
+      {:pl_deliver, from, msg} ->
+        send app, {:pl_deliver, from, msg}
+    end
+
+    run(app, pls)
   end
 
   def start do
-    receive do
-      {:bind, id, peers} ->
-        run(id, peers)
+    app = receive do
+      {:app, app} ->
+        app
     end
+
+    pls = receive do
+      {:bind, pls} ->
+        pls
+    end
+
+    IO.puts ["pl.app:", inspect app]
+    IO.puts ["pl.pls:", inspect pls]
+
+    run(app, pls)
   end
 end
