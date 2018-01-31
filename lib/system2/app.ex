@@ -3,24 +3,25 @@ defmodule App do
     loop()
   end
 
-  def run(_pl, _peer_map) do
-    loop()
-  end
-
   def start do
     pl = receive do
       {:pl, pl} ->
         pl
     end
 
-    peer_map = receive do
-      {:pl_deliver, _from, {:peer_map, peer_map}} ->
-        peer_map
+    peers = receive do
+      {:bound, peers} ->
+        peers
     end
 
     IO.puts ["app.pl:", inspect pl]
-    IO.puts ["app.pls:", inspect peer_map]
+    IO.puts ["app.peers:", inspect peers]
 
-    run(pl, peer_map)
+    receive do
+      {:broadcast, max_messages, timeout} ->
+        IO.puts ["broadcast"]
+    end
+
+    loop()
   end
 end

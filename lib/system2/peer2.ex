@@ -16,6 +16,11 @@ defmodule Peer2 do
         send system, {:pl_is, self(), pl}
     end
 
+    receive do
+      {:broadcast, max_messages, timeout} ->
+        send app, {:broadcast, max_messages, timeout}
+    end
+
     loop()
   end
 end

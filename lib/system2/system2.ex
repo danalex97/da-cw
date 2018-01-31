@@ -53,15 +53,10 @@ defmodule System2 do
       send pl, {:bind, peer_map}
     end)
 
-    # # register pls to app
-    # Enum.map(pls, fn (pl) ->
-    #   send pl, {:pl_deliver, self(), {:peer_map, peer_map}}
-    # end)
-    #
-    # #broadcast
-    # Enum.map(pls, fn (pl) ->
-    #   send pl, {:pl_deliver, self(), {:broadcast, @max_messages, @timeout}}
-    # end)
+    #broadcast
+    Enum.map(peers, fn (peer) ->
+      send peer, {:broadcast, @max_messages, @timeout}
+    end)
 
     loop()
   end
