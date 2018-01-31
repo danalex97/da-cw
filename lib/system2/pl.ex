@@ -13,13 +13,7 @@ defmodule PL do
     run(peer, app, peer_map)
   end
 
-  def start do
-    # peer = the process
-    peer = receive do
-      {:peer, peer} ->
-        peer
-    end
-
+  def start(peer) do
     app = receive do
       {:app, app} ->
         app

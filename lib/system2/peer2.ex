@@ -4,10 +4,9 @@ defmodule Peer2 do
   end
 
   def start do
-    pl  = spawn(PL, :start, [])
-    app = spawn(App, :start, [])
+    pl  = spawn(PL, :start, [self()])
+    app = spawn(App, :start, [self()])
 
-    send pl, {:peer, self()}
     send pl, {:app, app}
     send app, {:pl, pl}
 

@@ -1,9 +1,9 @@
 defmodule App do
-  def loop do
+  defp loop do
     loop()
   end
 
-  def start do
+  def start(_peer) do
     pl = receive do
       {:pl, pl} ->
         pl
@@ -18,7 +18,7 @@ defmodule App do
     IO.puts ["app.peers:", inspect peers]
 
     receive do
-      {:broadcast, max_messages, timeout} ->
+      {:broadcast, _max_messages, _timeout} ->
         IO.puts ["broadcast"]
     end
 
