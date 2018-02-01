@@ -10,14 +10,14 @@ defmodule App do
     IO.puts ["#{inspect id}: ", inspect results]
   end
 
-  def send_broadcast(app, pl, peer, peers, sent_messages, max_messages) do
+  def send_broadcast(ctx, peers, sent_messages, max_messages) do
     if max_messages == 0 do
       send self(), :stop
     end
 
     state = receive do
       :stop ->
-        send app, {:send_done, sent_messages}
+        send ctx[:app], {:send_done, sent_messages}
         :stoped
     after 0 ->
       :running
@@ -26,7 +26,7 @@ defmodule App do
     if state == :running do
       sent_messages = Enum.reduce(peers, sent_messages, fn (receiver, sent_messages) ->
         # IO.puts ["#{inspect self} SEND: ", inspect receiver]
-        send pl, {:pl_deliver, receiver, :peer_broadcast}
+        send ctx[:pl], {:pl_deliver, receiver, :peer_broadcast}
 
         msgs = Map.get(sent_messages, receiver, 0)
         sent_messages = Map.put(sent_messages, receiver, msgs + 1)
@@ -34,14 +34,14 @@ defmodule App do
         sent_messages
       end)
 
-      send_broadcast(app, pl, peer, peers, sent_messages, max_messages - 1)
+      send_broadcast(ctx, peers, sent_messages, max_messages - 1)
     end
   end
 
-  def recv_broadcast(app, peers, recv_messages) do
+  def recv_broadcast(ctx, peers, recv_messages) do
     receive do
       :stop ->
-        send app, {:recv_done, recv_messages}
+        send ctx[:app], {:recv_done, recv_messages}
 
       {:pl_deliver, sender, :peer_broadcast} ->
         # IO.puts ["#{inspect self} RECV: ", inspect sender]
@@ -49,7 +49,7 @@ defmodule App do
         msgs = Map.get(recv_messages, sender, 0)
         recv_messages = Map.put(recv_messages, sender, msgs + 1)
 
-        recv_broadcast(app, peers, recv_messages)
+        recv_broadcast(ctx, peers, recv_messages)
     end
   end
 
@@ -72,14 +72,20 @@ defmodule App do
     # IO.puts ["app.pl:", inspect pl]
     # IO.puts ["app.peers:", inspect peers]
 
+    ctx = %{
+      :app  => self(),
+      :pl   => pl,
+      :peer => peer,
+    }
+
     receive do
       {:broadcast, max_messages, timeout} ->
         send_process = spawn(App, :send_broadcast,
-          [self(), pl, peer, peers, %{}, max_messages])
+          [ctx, peers, %{}, max_messages])
         :timer.send_after(timeout, send_process, :stop)
 
         :timer.send_after(timeout, self(), :stop)
-        recv_broadcast(self(), peers, %{})
+        recv_broadcast(ctx, peers, %{})
 
         sent_messages = receive do
           {:send_done, sent_messages} ->
