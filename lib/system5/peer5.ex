@@ -1,12 +1,19 @@
-defmodule Peer4 do
-  def loop do
-    loop()
+defmodule Peer5 do
+  def loop(app, pl, beb) do
+    receive do
+      :exit ->
+        Process.exit(app, :kill)
+        Process.exit(pl, :kill)
+        Process.exit(beb, :kill)
+    after 0 ->
+      loop(app, pl, beb)
+    end
   end
 
   def start do
-    pl  = spawn(LPL4,  :start, [self()])
-    beb = spawn(Beb4, :start, [self()])
-    app = spawn(App4, :start, [self()])
+    pl  = spawn(LPL5,  :start, [self()])
+    beb = spawn(Beb5, :start, [self()])
+    app = spawn(App5, :start, [self()])
 
     send pl,  {:beb, beb}
     send beb, {:pl, pl}
@@ -29,6 +36,6 @@ defmodule Peer4 do
         send app, {:broadcast, max_messages, timeout}
     end
 
-    loop()
+    loop(app, pl, beb)
   end
 end
