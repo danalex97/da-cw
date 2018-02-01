@@ -22,7 +22,7 @@ defmodule App6 do
     end
 
     if state == :running do
-      send ctx[:beb], {:beb_broadcast, :peer_broadcast}
+      send ctx[:rb], {:rb_broadcast, {:peer_broadcast, ctx[:peer], cnt_broadcasts}}
       send_broadcast(ctx, cnt_broadcasts + 1, max_messages - 1)
     end
   end
@@ -32,7 +32,7 @@ defmodule App6 do
       :stop ->
         send ctx[:app], {:recv_done, recv_messages}
 
-      {:beb_deliver, sender, :peer_broadcast} ->
+      {:rb_deliver, sender, {:peer_broadcast, _, _}} ->
         # IO.puts ["#{inspect self} RECV: ", inspect sender]
 
         msgs = Map.get(recv_messages, sender, 0)
@@ -43,9 +43,9 @@ defmodule App6 do
   end
 
   def start(peer) do
-    beb = receive do
-      {:beb, beb} ->
-        beb
+    rb = receive do
+      {:rb, rb} ->
+        rb
     end
 
     id = receive do
@@ -60,7 +60,7 @@ defmodule App6 do
 
     ctx = %{
       :app  => self(),
-      :beb  => beb,
+      :rb  => rb,
       :peer => peer,
     }
 

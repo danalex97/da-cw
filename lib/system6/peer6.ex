@@ -14,12 +14,17 @@ defmodule Peer6 do
     pl  = spawn(LPL6, :start, [self()])
     beb = spawn(Beb6, :start, [self()])
     app = spawn(App6, :start, [self()])
+    rb = spawn(RB, :start, [self()])
 
     send pl,  {:beb, beb}
     send beb, {:pl, pl}
 
-    send app, {:beb, beb}
+    send rb, {:beb, beb}
+    send beb, {:rb, rb}
     send beb, {:app, app}
+
+    send app, {:rb, rb}
+    send rb, {:app, app}
 
     receive do
       {:id, id} ->
