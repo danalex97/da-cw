@@ -1,8 +1,4 @@
 defmodule System1 do
-  @n 5
-  @max_messages 1000
-  @timeout      3000
-
   defp loop do
     loop()
   end
@@ -27,17 +23,22 @@ defmodule System1 do
   end
 
   defp start(spawn_function, setup) do
+    [n, max_messages, timeout, _rel] = Enum.map(System.argv(), fn(arg) ->
+      {i, _} = Integer.parse(arg)
+      i
+    end)
+
     setup . ()
 
-    peers = Enum.to_list(for idx <- 0..(@n-1), do:
+    peers = Enum.to_list(for idx <- 0..(n-1), do:
       spawn_function . (idx + 1))
 
-    Enum.map(Enum.zip(peers, 1..@n), fn ({peer, id}) ->
+    Enum.map(Enum.zip(peers, 1..n), fn ({peer, id}) ->
       send peer, {:bind, id, peers}
     end)
 
     Enum.map(peers, fn (peer) ->
-      send peer, {:broadcast, @max_messages, @timeout}
+      send peer, {:broadcast, max_messages, timeout}
     end)
 
     loop()

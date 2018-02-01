@@ -22,7 +22,8 @@ services:
     container_name: system
     command: >
       elixir --name master@master.localdomain --cookie pass
-             -S mix run --no-halt -e ${MAIN} ${PEERS}
+             -S mix run --no-halt -e
+             ${MAIN} ${PEERS} ${MAX_MESSAGES} ${TIMEOUT} ${LINK_REL}
     <<: *defaults
 
   peer1.localdomain:

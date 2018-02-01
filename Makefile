@@ -1,8 +1,12 @@
 PROJECT = da-cw
 NETWORK = $(PROJECT)_network
 PEERS = 5
+MAX_MESSAGES = 1000
+LINK_REL = 100
+TIMEOUT = 3000
 
-COMPOSE = MAIN=$(MAIN) PEERS=$(PEERS) docker-compose -p $(PROJECT)
+COMPOSE = MAIN=$(MAIN) PEERS=$(PEERS) MAX_MESSAGES=$(MAX_MESSAGES) \
+	TIMEOUT=$(TIMEOUT) LINK_REL=$(LINK_REL) docker-compose -p $(PROJECT)
 
 compile:
 	mix compile
@@ -15,7 +19,7 @@ build:
 
 # make MAIN=System1.start local
 local:
-	mix run -e $(MAIN)
+	mix run -e $(MAIN) $(PEERS) $(MAX_MESSAGES) $(TIMEOUT) $(LINK_REL)
 
 # need to add MAIN=... before
 # e.g. build MAIN=... up

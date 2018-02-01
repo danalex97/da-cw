@@ -1,8 +1,4 @@
 defmodule System4 do
-  @n 5
-  @max_messages 1000
-  @timeout      3000
-
   defp loop do
     loop()
   end
@@ -27,13 +23,18 @@ defmodule System4 do
   end
 
   defp start(spawn_function, setup) do
+    [n, max_messages, timeout, rel] = Enum.map(System.argv(), fn(arg) ->
+      {i, _} = Integer.parse(arg)
+      i
+    end)
+
     setup . ()
 
-    peers = Enum.to_list(for idx <- 0..(@n-1), do:
+    peers = Enum.to_list(for idx <- 0..(n-1), do:
       spawn_function . (idx + 1))
 
     # tell each process its ID
-    Enum.map(Enum.zip(peers, 1..@n), fn ({peer, id}) ->
+    Enum.map(Enum.zip(peers, 1..n), fn ({peer, id}) ->
       send peer, {:id, id}
     end)
 
@@ -43,7 +44,7 @@ defmodule System4 do
     end)
 
     # peer => pl map
-    peer_map = Enum.reduce(0..(@n-1), %{}, fn(_idx, mp) ->
+    peer_map = Enum.reduce(0..(n-1), %{}, fn(_idx, mp) ->
       {peer, pl} = receive do
         {:pl_is, peer, pl} ->
           {peer, pl}
@@ -56,12 +57,12 @@ defmodule System4 do
     pls = Enum.to_list(for peer <- peers, do:
       Map.get(peer_map, peer))
     Enum.map(pls, fn (pl) ->
-      send pl, {:bind, peer_map}
+      send pl, {:bind, peer_map, rel}
     end)
 
     #broadcast
     Enum.map(peers, fn (peer) ->
-      send peer, {:broadcast, @max_messages, @timeout}
+      send peer, {:broadcast, max_messages, timeout}
     end)
 
     loop()
