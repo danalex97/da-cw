@@ -32,6 +32,12 @@ defmodule System2 do
     peers = Enum.to_list(for idx <- 0..(@n-1), do:
       spawn_function . (idx + 1))
 
+    # tell each process its ID
+    Enum.map(Enum.zip(peers, 1..@n), fn ({peer, id}) ->
+      send peer, {:id, id}
+    end)
+
+    # ask each process for its pl
     Enum.map(peers, fn (peer) ->
       send peer, {:who_is_pl, self()}
     end)

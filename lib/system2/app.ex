@@ -59,6 +59,11 @@ defmodule App do
         pl
     end
 
+    id = receive do
+      {:id, id} ->
+        id
+    end
+
     peers = receive do
       {:bound, peers} ->
         peers
@@ -85,7 +90,7 @@ defmodule App do
             recv_messages
         end
 
-        centralise(peer, peers, recv_messages, sent_messages)
+        centralise(id, peers, recv_messages, sent_messages)
     end
   end
 end

@@ -11,6 +11,11 @@ defmodule Peer2 do
     send app, {:pl, pl}
 
     receive do
+      {:id, id} ->
+        send app, {:id, id}
+    end
+
+    receive do
       {:who_is_pl, system} ->
         send system, {:pl_is, self(), pl}
     end
