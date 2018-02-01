@@ -1,4 +1,4 @@
-defmodule System5 do
+defmodule System6 do
   @n 5
   @max_messages 1000
   @timeout      3000
@@ -8,13 +8,13 @@ defmodule System5 do
   end
 
   defp local_spawn(_idx) do
-    spawn(Peer5, :start, [])
+    spawn(Peer6, :start, [])
   end
 
   defp network_spawn(idx) do
     Node.spawn(
         :'peer#{idx}@peer#{idx}.localdomain',
-        Peer5,
+        Peer6,
         :start,
         [])
   end

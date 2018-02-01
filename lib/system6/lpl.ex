@@ -1,4 +1,4 @@
-defmodule LPL5 do
+defmodule LPL6 do
   @reliablity 100
 
   def run(peer, beb, peer_map) do
