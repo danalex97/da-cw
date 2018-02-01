@@ -1,13 +1,11 @@
   defmodule Peer1 do
-    def centralise(id, peers, recv_messages, sent_messages) do
-      results = Enum.reduce(peers, [], fn (peer, results) ->
+    def centralise(peers, recv_messages, sent_messages) do
+      Enum.reduce(peers, [], fn (peer, results) ->
         sent = Map.get(sent_messages, peer, 0)
         recv = Map.get(recv_messages, peer, 0)
 
         results ++ [{sent, recv}]
       end)
-
-      IO.puts ["#{inspect id}: ", inspect results]
     end
 
     def send_broadcast(peer, peers, sent_messages, max_messages) do
@@ -73,7 +71,8 @@
                   recv_messages
               end
 
-              centralise(id, peers, recv_messages, sent_messages)
+              results = centralise(peers, recv_messages, sent_messages)
+              IO.puts ["#{inspect id}: ", inspect results]
           end
       end
     end
