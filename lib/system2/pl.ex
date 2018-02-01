@@ -26,9 +26,9 @@ defmodule PL do
 
     send app, {:bound, Map.keys(peer_map)}
 
-    IO.puts ["pl.peer:", inspect peer]
-    IO.puts ["pl.app:", inspect app]
-    IO.puts ["pl.peer_map:", inspect peer_map]
+    # IO.puts ["pl.peer:", inspect peer]
+    # IO.puts ["pl.app:", inspect app]
+    # IO.puts ["pl.peer_map:", inspect peer_map]
 
     run(peer, app, peer_map)
   end
