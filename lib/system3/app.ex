@@ -1,4 +1,4 @@
-defmodule App2 do
+defmodule App3 do
   def centralise(peers, recv_messages, sent_messages) do
     Enum.reduce(peers, [], fn (peer, results) ->
       sent = Map.get(sent_messages, peer, 0)
@@ -78,7 +78,7 @@ defmodule App2 do
 
     receive do
       {:broadcast, max_messages, timeout} ->
-        send_process = spawn(App2, :send_broadcast,
+        send_process = spawn(App3, :send_broadcast,
           [ctx, peers, %{}, max_messages])
         :timer.send_after(timeout, send_process, :stop)
 

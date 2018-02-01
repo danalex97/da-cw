@@ -1,4 +1,4 @@
-defmodule PL do
+defmodule PL2 do
 
   def run(peer, app, peer_map) do
     receive do
