@@ -1,9 +1,14 @@
 defmodule LPL do
+  @reliablity 50
+
   def run(peer, beb, peer_map) do
     receive do
       {:pl_send, dest, msg} ->
         dest_pl = Map.get(peer_map, dest)
-        send dest_pl, {:pl_deliver, peer, msg}
+
+        if :rand.uniform <= @reliablity / 100.0 do
+          send dest_pl, {:pl_deliver, peer, msg}
+        end
 
       {:pl_deliver, from, msg} ->
         send beb, {:pl_deliver, from, msg}
