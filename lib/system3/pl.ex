@@ -26,10 +26,6 @@ defmodule PL3 do
 
     send beb, {:peers, Map.keys(peer_map)}
 
-    IO.puts ["pl.peer:", inspect peer]
-    IO.puts ["pl.beb:", inspect beb]
-    IO.puts ["pl.peer_map:", inspect peer_map]
-
     run(peer, beb, peer_map)
   end
 end

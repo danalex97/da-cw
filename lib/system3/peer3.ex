@@ -4,7 +4,7 @@ defmodule Peer3 do
   end
 
   def start do
-    pl  = spawn(PL3, :start, [self()])
+    pl  = spawn(PL3,  :start, [self()])
     beb = spawn(Beb3, :start, [self()])
     app = spawn(App3, :start, [self()])
 
@@ -24,14 +24,11 @@ defmodule Peer3 do
         send system, {:pl_is, self(), pl}
     end
 
-    # receive do
-    #   {:broadcast, max_messages, timeout} ->
-    #     send app, {:broadcast, max_messages, timeout}
-    # end
+    receive do
+      {:broadcast, max_messages, timeout} ->
+        send app, {:broadcast, max_messages, timeout}
+    end
 
-    IO.puts "here"
-    send beb, {:beb_broadcast, "plm"}
-    
     loop()
   end
 end

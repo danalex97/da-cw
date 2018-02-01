@@ -27,8 +27,7 @@ defmodule Beb3 do
       {:peers, peers} ->
         peers
     end
-
-    IO.puts "here2"
+    send app, {:peers, peers}
 
     run(peers, pl, app)
   end

@@ -8,53 +8,44 @@ defmodule App3 do
     end)
   end
 
-  def send_broadcast(ctx, peers, sent_messages, max_messages) do
+  def send_broadcast(ctx, cnt_broadcasts, max_messages) do
     if max_messages == 0 do
       send self(), :stop
     end
 
     state = receive do
       :stop ->
-        send ctx[:app], {:send_done, sent_messages}
+        send ctx[:app], {:send_done, cnt_broadcasts}
         :stoped
     after 0 ->
       :running
     end
 
     if state == :running do
-      sent_messages = Enum.reduce(peers, sent_messages, fn (receiver, sent_messages) ->
-        # IO.puts ["#{inspect self} SEND: ", inspect receiver]
-        send ctx[:pl], {:pl_deliver, receiver, :peer_broadcast}
-
-        msgs = Map.get(sent_messages, receiver, 0)
-        sent_messages = Map.put(sent_messages, receiver, msgs + 1)
-
-        sent_messages
-      end)
-
-      send_broadcast(ctx, peers, sent_messages, max_messages - 1)
+      send ctx[:beb], {:beb_broadcast, :peer_broadcast}
+      send_broadcast(ctx, cnt_broadcasts + 1, max_messages - 1)
     end
   end
 
-  def recv_broadcast(ctx, peers, recv_messages) do
+  def recv_broadcast(ctx, recv_messages) do
     receive do
       :stop ->
         send ctx[:app], {:recv_done, recv_messages}
 
-      {:pl_deliver, sender, :peer_broadcast} ->
+      {:beb_deliver, sender, :peer_broadcast} ->
         # IO.puts ["#{inspect self} RECV: ", inspect sender]
 
         msgs = Map.get(recv_messages, sender, 0)
         recv_messages = Map.put(recv_messages, sender, msgs + 1)
 
-        recv_broadcast(ctx, peers, recv_messages)
+        recv_broadcast(ctx, recv_messages)
     end
   end
 
   def start(peer) do
-    pl = receive do
-      {:pl, pl} ->
-        pl
+    beb = receive do
+      {:beb, beb} ->
+        beb
     end
 
     id = receive do
@@ -63,36 +54,37 @@ defmodule App3 do
     end
 
     peers = receive do
-      {:bound, peers} ->
+      {:peers, peers} ->
         peers
     end
 
-    # IO.puts ["app.pl:", inspect pl]
-    # IO.puts ["app.peers:", inspect peers]
-
     ctx = %{
       :app  => self(),
-      :pl   => pl,
+      :beb  => beb,
       :peer => peer,
     }
 
     receive do
       {:broadcast, max_messages, timeout} ->
         send_process = spawn(App3, :send_broadcast,
-          [ctx, peers, %{}, max_messages])
+          [ctx, 0, max_messages])
         :timer.send_after(timeout, send_process, :stop)
 
         :timer.send_after(timeout, self(), :stop)
-        recv_broadcast(ctx, peers, %{})
+        recv_broadcast(ctx, %{})
 
-        sent_messages = receive do
-          {:send_done, sent_messages} ->
-            sent_messages
+        cnt_broadcasts = receive do
+          {:send_done, cnt_broadcasts} ->
+            cnt_broadcasts
         end
         recv_messages = receive do
           {:recv_done, recv_messages} ->
             recv_messages
         end
+
+        sent_messages = Enum.reduce(peers, %{}, fn (peer, sent_messages) ->
+          Map.put(sent_messages, peer, cnt_broadcasts)
+        end)
 
         results = centralise(peers, recv_messages, sent_messages)
         IO.puts ["#{inspect id}: ", inspect results]
