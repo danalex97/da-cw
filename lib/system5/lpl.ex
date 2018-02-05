@@ -1,3 +1,4 @@
+# Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule LPL5 do
   def run(peer, beb, peer_map, reliablity) do
     receive do

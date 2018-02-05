@@ -1,3 +1,4 @@
+# Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule App4 do
   def centralise(peers, recv_messages, sent_messages) do
     Enum.reduce(peers, [], fn (peer, results) ->

@@ -1,3 +1,4 @@
+# Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule Peer6 do
   def loop(app, pl, beb) do
     receive do

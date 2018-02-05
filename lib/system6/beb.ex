@@ -1,3 +1,4 @@
+# Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule Beb6 do
   def run(peers, pl, rb) do
     receive do

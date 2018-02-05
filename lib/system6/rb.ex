@@ -1,3 +1,4 @@
+# Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule RB do
   def run(beb, app, peer, delivered) do
     receive do

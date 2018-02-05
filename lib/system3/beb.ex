@@ -1,3 +1,4 @@
+# Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule Beb3 do
   def run(peers, pl, app) do
     receive do
