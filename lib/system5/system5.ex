@@ -67,7 +67,7 @@ defmodule System5 do
     end)
 
     #send termination signal to peer3 -- TODO: need to vary timeout for report
-    :timer.sleep(10)
+    :timer.sleep(5)
     send Enum.at(peers, 2), :exit
 
     loop()

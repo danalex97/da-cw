@@ -1,16 +1,5 @@
 # Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule Peer5 do
-  def loop(app, pl, beb) do
-    receive do
-      :exit ->
-        Process.exit(app, :kill)
-        Process.exit(pl, :kill)
-        Process.exit(beb, :kill)
-    after 0 ->
-      loop(app, pl, beb)
-    end
-  end
-
   def start do
     pl  = spawn(LPL5,  :start, [self()])
     beb = spawn(Beb5, :start, [self()])
@@ -37,6 +26,11 @@ defmodule Peer5 do
         send app, {:broadcast, max_messages, timeout}
     end
 
-    loop(app, pl, beb)
+    receive do
+      :exit ->
+        Process.exit(app, :kill)
+        Process.exit(pl, :kill)
+        Process.exit(beb, :kill)
+    end
   end
 end

@@ -10,7 +10,9 @@ defmodule App6 do
   end
 
   def broadcast(ctx, max_messages, cnt_broadcasts, recv_messages) do
-    cnt_broadcasts = if max_messages > 0 do
+    {_, message_queue_len} = :erlang.process_info(ctx[:app], :message_queue_len)
+
+    cnt_broadcasts = if max_messages > 0 and message_queue_len == 0 do
       send ctx[:rb], {:rb_broadcast, {:peer_broadcast, ctx[:peer], cnt_broadcasts}}
       cnt_broadcasts + 1
     else
