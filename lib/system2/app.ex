@@ -24,8 +24,7 @@ defmodule App2 do
 
     if state == :running do
       sent_messages = Enum.reduce(peers, sent_messages, fn (receiver, sent_messages) ->
-        # IO.puts ["#{inspect self} SEND: ", inspect receiver]
-        send ctx[:pl], {:pl_deliver, receiver, :peer_broadcast}
+        send ctx[:pl], {:pl_send, receiver, :peer_broadcast}
 
         msgs = Map.get(sent_messages, receiver, 0)
         sent_messages = Map.put(sent_messages, receiver, msgs + 1)
@@ -43,8 +42,6 @@ defmodule App2 do
         send ctx[:app], {:recv_done, recv_messages}
 
       {:pl_deliver, sender, :peer_broadcast} ->
-        # IO.puts ["#{inspect self} RECV: ", inspect sender]
-
         msgs = Map.get(recv_messages, sender, 0)
         recv_messages = Map.put(recv_messages, sender, msgs + 1)
 
@@ -67,9 +64,6 @@ defmodule App2 do
       {:bound, peers} ->
         peers
     end
-
-    # IO.puts ["app.pl:", inspect pl]
-    # IO.puts ["app.peers:", inspect peers]
 
     ctx = %{
       :app  => self(),
