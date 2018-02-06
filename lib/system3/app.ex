@@ -12,11 +12,11 @@ defmodule App3 do
   def broadcast(ctx, max_messages, cnt_broadcasts, recv_messages) do
     {_, message_queue_len} = :erlang.process_info(ctx[:app], :message_queue_len)
 
-    cnt_broadcasts = if max_messages > 0 and message_queue_len == 0 do
+    {cnt_broadcasts, max_messages} = if max_messages > 0 and message_queue_len == 0 do
       send ctx[:beb], {:beb_broadcast, :peer_broadcast}
-      cnt_broadcasts + 1
+      {cnt_broadcasts + 1, max_messages - 1}
     else
-      cnt_broadcasts
+      {cnt_broadcasts, max_messages}
     end
 
     receive do
@@ -26,7 +26,7 @@ defmodule App3 do
         msgs = Map.get(recv_messages, sender, 0)
         recv_messages = Map.put(recv_messages, sender, msgs + 1)
 
-        broadcast(ctx, max_messages - 1, cnt_broadcasts, recv_messages)
+        broadcast(ctx, max_messages, cnt_broadcasts, recv_messages)
     end
   end
 
