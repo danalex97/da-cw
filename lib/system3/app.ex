@@ -49,8 +49,7 @@ defmodule App3 do
       :id => id,
       :app  => self(),
       :beb  => beb,
-      :peer => peer,
-      :peers => peers
+      :peer => peer
     }
 
     receive do
