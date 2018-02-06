@@ -2,7 +2,6 @@
 defmodule RB do
   def run(beb, app, peer, delivered) do
     receive do
-      # TODO: unique messages?
       {:rb_broadcast, m} ->
         send beb, {:beb_broadcast, {:rb_data, peer, m}}
         run(beb, app, peer, delivered)
