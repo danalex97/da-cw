@@ -2,9 +2,7 @@ defmodule PFD do
   @timeout 1000
 
   def run(pl, lrb, peer, processes, alive, detected) do
-    # IO.puts ["detected ", inspect detected]
-    # IO.puts ["alive ", inspect alive]
-
+    # For details on the component's implementation see the report.
     receive do
       {:pl_deliver2, from, :heartbeat_request} ->
         send pl, {:pl_send2, from, :heartbeat_reply}

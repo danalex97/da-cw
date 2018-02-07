@@ -66,7 +66,7 @@ defmodule System6 do
       send peer, {:broadcast, max_messages, timeout}
     end)
 
-    #send termination signal to peer3 -- TODO: need to vary timeout for report
+    #send termination signal to peer3 
     :timer.sleep(10)
     send Enum.at(peers, 2), :exit
 

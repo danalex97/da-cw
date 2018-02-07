@@ -39,7 +39,8 @@ defmodule System2 do
       send peer, {:id, id}
     end)
 
-    # ask each process for its pl
+    # ask each process for its pl; we only know the
+    # peer's PID, but not PL's PID
     Enum.map(peers, fn (peer) ->
       send peer, {:who_is_pl, self()}
     end)
@@ -54,7 +55,7 @@ defmodule System2 do
       Map.put(mp, peer, pl)
     end)
 
-    # bind pls to pl -- should be from app to pl
+    # bind pls to pl
     pls = Enum.to_list(for peer <- peers, do:
       Map.get(peer_map, peer))
     Enum.map(pls, fn (pl) ->

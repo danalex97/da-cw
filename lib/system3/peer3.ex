@@ -5,6 +5,7 @@ defmodule Peer3 do
   end
 
   def start do
+    # creating and binding the compoents
     pl  = spawn(PL3,  :start, [self()])
     beb = spawn(Beb3, :start, [self()])
     app = spawn(App3, :start, [self()])

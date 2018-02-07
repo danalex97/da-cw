@@ -26,6 +26,7 @@ defmodule Peer5 do
         send app, {:broadcast, max_messages, timeout}
     end
 
+    # When we receive an exit message, we kill all the components.
     receive do
       :exit ->
         Process.exit(app, :kill)

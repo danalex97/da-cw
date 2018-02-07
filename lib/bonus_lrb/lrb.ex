@@ -1,6 +1,7 @@
 # Alexandru Dan(ad5915) and Maurizio Zen(mz4715)
 defmodule LRB do
   def run(beb, app, peer, correct, process_msgs) do
+    # For details on the component's implementation see the report.
     receive do
       {:rb_broadcast, m} ->
         send beb, {:beb_broadcast, {:rb_data, peer, m}}

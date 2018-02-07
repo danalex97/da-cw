@@ -10,6 +10,7 @@ defmodule App4 do
   end
 
   def broadcast(ctx, max_messages, cnt_broadcasts, recv_messages) do
+    # For more comments see System3/app.
     {_, message_queue_len} = :erlang.process_info(ctx[:app], :message_queue_len)
 
     {cnt_broadcasts, max_messages} = if max_messages > 0 and message_queue_len == 0 do
@@ -27,6 +28,10 @@ defmodule App4 do
         recv_messages = Map.put(recv_messages, sender, msgs + 1)
 
         broadcast(ctx, max_messages, cnt_broadcasts, recv_messages)
+    # We introduce a timeout for receiving messages to avoid communication
+    # deadlocks. If the 100ms timeout passes, we are sure the mailbox is
+    # empty and we broadcast again. We do this as we can no longer assume
+    # perfect point-to-point links.
     after 100 ->
       broadcast(ctx, max_messages, cnt_broadcasts, recv_messages)
     end

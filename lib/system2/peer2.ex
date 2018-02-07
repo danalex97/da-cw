@@ -16,11 +16,15 @@ defmodule Peer2 do
         send app, {:id, id}
     end
 
+    # Once the pl component is created, we send back its identity
+    # to the system such that the system has to bind the pl components.
     receive do
       {:who_is_pl, system} ->
         send system, {:pl_is, self(), pl}
     end
 
+    # The broadcast request is routed to the app component so that the
+    # System is not aware of the app component.
     receive do
       {:broadcast, max_messages, timeout} ->
         send app, {:broadcast, max_messages, timeout}

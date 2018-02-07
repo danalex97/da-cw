@@ -10,9 +10,12 @@ defmodule App6 do
   end
 
   def broadcast(ctx, max_messages, cnt_broadcasts, recv_messages) do
+    # For more explainations see System4/app and System3/app.
     {_, message_queue_len} = :erlang.process_info(ctx[:app], :message_queue_len)
 
     {cnt_broadcasts, max_messages} = if max_messages > 0 and message_queue_len == 0 do
+      # We sign each message with the peer's PID and cnt_broadcasts. Each message
+      # should, thus, be unique.
       send ctx[:rb], {:rb_broadcast, {:peer_broadcast, ctx[:peer], cnt_broadcasts}}
       {cnt_broadcasts + 1, max_messages - 1}
     else

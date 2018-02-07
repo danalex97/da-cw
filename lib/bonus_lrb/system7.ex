@@ -24,6 +24,7 @@ defmodule System7 do
   end
 
   defp start(spawn_function, setup) do
+    # For details on the component's implementation see the report.
     [n, max_messages, timeout, rel] = Enum.map(System.argv(), fn(arg) ->
       {i, _} = Integer.parse(arg)
       i

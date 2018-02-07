@@ -50,6 +50,7 @@ defmodule App2 do
   end
 
   def start(peer) do
+    # binding the components
     pl = receive do
       {:pl, pl} ->
         pl
@@ -65,6 +66,7 @@ defmodule App2 do
         peers
     end
 
+    # The rest is similar to System1/peer1.
     ctx = %{
       :app  => self(),
       :pl   => pl,

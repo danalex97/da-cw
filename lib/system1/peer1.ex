@@ -14,6 +14,8 @@ defmodule Peer1 do
       send self(), :stop
     end
 
+    # When we receive a stop messages(that is a timeout or max_messages
+    # reached) we stop sending and we send back the results 
     state = receive do
       :stop ->
         send peer, {:send_done, sent_messages}
@@ -24,7 +26,6 @@ defmodule Peer1 do
 
     if state == :running do
       sent_messages = Enum.reduce(peers, sent_messages, fn (receiver, sent_messages) ->
-        # IO.puts ["#{inspect self} SEND: ", inspect receiver]
         send receiver, {:peer_broadcast, peer}
 
         msgs = Map.get(sent_messages, receiver, 0)
@@ -43,8 +44,6 @@ defmodule Peer1 do
         send peer, {:recv_done, recv_messages}
 
       {:peer_broadcast, sender} ->
-        # IO.puts ["#{inspect self} RECV: ", inspect sender]
-
         msgs = Map.get(recv_messages, sender, 0)
         recv_messages = Map.put(recv_messages, sender, msgs + 1)
 
@@ -57,12 +56,16 @@ defmodule Peer1 do
       {:bind, id, peers} ->
         receive do
           {:broadcast, max_messages, timeout} ->
+            # We spawn a process that only sends broadcasts. This will
+            # execute interleaved with the receiver process.
             send_process = spawn(Peer1, :send_broadcast, [self(), peers, %{}, max_messages])
             :timer.send_after(timeout, send_process, :stop)
 
             :timer.send_after(timeout, self(), :stop)
             recv_broadcast(self(), peers, %{})
 
+            # Once the sender process(component) receives a timeout, it will
+            # send back its results. This happens for the receiver as well.
             sent_messages = receive do
               {:send_done, sent_messages} ->
                 sent_messages
@@ -72,6 +75,7 @@ defmodule Peer1 do
                 recv_messages
             end
 
+            # The results are centralized and then printed.
             results = centralise(peers, recv_messages, sent_messages)
             IO.puts ["#{inspect id}: ", inspect results]
         end

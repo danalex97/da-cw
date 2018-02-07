@@ -5,6 +5,7 @@ defmodule LPL4 do
       {:pl_send, dest, msg} ->
         dest_pl = Map.get(peer_map, dest)
 
+        # a message gets send with reliablity% probability
         if :rand.uniform <= reliablity / 100.0 do
           send dest_pl, {:pl_deliver, peer, msg}
         end

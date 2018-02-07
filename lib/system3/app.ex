@@ -10,6 +10,10 @@ defmodule App3 do
   end
 
   def broadcast(ctx, max_messages, cnt_broadcasts, recv_messages) do
+    # As oppsed to System2, we change the sends and receives in a single
+    # process(component). We check the message queue for pending messages and
+    # we only send a message when the queue is empty. This works as a
+    # mechanism for preventing an unbalanced receive-send ratio.
     {_, message_queue_len} = :erlang.process_info(ctx[:app], :message_queue_len)
 
     {cnt_broadcasts, max_messages} = if max_messages > 0 and message_queue_len == 0 do
@@ -19,6 +23,8 @@ defmodule App3 do
       {cnt_broadcasts, max_messages}
     end
 
+    # We only receive when nobody sends. Since the link is perfect, we assume
+    # that will always have a pending message.
     receive do
       :stop ->
         {cnt_broadcasts, recv_messages}
