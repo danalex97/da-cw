@@ -36,6 +36,7 @@ defmodule Peer6 do
         Process.exit(app, :kill)
         Process.exit(pl, :kill)
         Process.exit(beb, :kill)
+        Process.exit(rb, :kill)
     end
   end
 end
